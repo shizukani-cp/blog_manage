@@ -5,7 +5,7 @@ import yaml, markdown
 from jinja2 import Template
 
 ENCODE = "utf-8"
-EXTENSIONS = ["tables"]
+EXTENSIONS = ["tables", "fenced_code"]
 
 def get_articles(top):
     return glob.glob(f"{top}/articles/[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]/index.md")
@@ -69,7 +69,7 @@ def main(arg):
         configs.append(article.config)
 
     with open(Path(arg.top_dir) / "scripts" / "articles.json.js", "w", encoding=ENCODE) as f:
-        f.write(f"window.articles = {json.dumps(configs, ensure_ascii=False)}")
+        f.write(f"window.articles = JSON.parse('{json.dumps(configs, ensure_ascii=False)}');")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
