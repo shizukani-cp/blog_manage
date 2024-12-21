@@ -7,8 +7,8 @@ from jinja2 import Template
 ENCODE = "utf-8"
 EXTENSIONS = ["tables"]
 
-def get_articles():
-    return glob.glob("articles/[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]/index.md")
+def get_articles(top):
+    return glob.glob(f"{top}/articles/[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]/index.md")
 
 class Article:
     def __init__(self, filepath: Path):
@@ -54,7 +54,7 @@ def load_template(templatefile):
 def main(arg):
     template = load_template(arg.template)
 
-    articles = [Article(Path(fname)) for fname in get_articles()]
+    articles = [Article(Path(fname)) for fname in get_articles(arg.top_dir)]
 
     if len(articles) == 0:
         sys.exit("記事がありません")
@@ -64,6 +64,7 @@ def main(arg):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
+    parser.add_argument("top_dir")
     parser.add_argument("--template", "-t", type=argparse.FileType("r", encoding=ENCODE), default="template.html")
 
     args = parser.parse_args()
