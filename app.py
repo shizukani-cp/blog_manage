@@ -74,7 +74,7 @@ def main(arg):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
-    parser.add_argument("top_dir")
+    parser.add_argument("top_dir", default=".")
     parser.add_argument("--template", "-t", type=argparse.FileType("r", encoding=ENCODE))
 
     args = parser.parse_args()
