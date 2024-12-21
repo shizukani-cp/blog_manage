@@ -1,4 +1,4 @@
-import sys, re, glob, argparse
+import sys, re, glob, json, argparse
 from io import StringIO
 from pathlib import Path
 import yaml, markdown
@@ -59,7 +59,13 @@ def main(arg):
     if len(articles) == 0:
         sys.exit("記事がありません")
 
-    for article in articles: article.html_save(template)
+    configs = []
+    for article in articles:
+        article.html_save(template)
+        configs.append(article.config)
+
+    with open(Path(arg.top_dir) / "articles.json", "w", encoding=ENCODE) as f:
+        f.write(json.dumps(configs, indent=4, ensure_ascii=False))
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
