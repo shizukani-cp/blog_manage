@@ -68,8 +68,8 @@ def main(arg):
         article.html_save(template)
         configs.append(article.config)
 
-    with open(Path(arg.top_dir) / "articles.json", "w", encoding=ENCODE) as f:
-        f.write(json.dumps(configs, indent=4, ensure_ascii=False))
+    with open(Path(arg.top_dir) / "scripts" / "articles.json.js", "w", encoding=ENCODE) as f:
+        f.write(f"window.articles = {json.dumps(configs, ensure_ascii=False)}")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
