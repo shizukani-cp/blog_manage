@@ -52,6 +52,10 @@ def load_template(templatefile):
     return Template(templatefile.read())
 
 def main(arg):
+
+    if arg.template is None:
+        arg.template = open(Path(arg.top_dir) / "template.html", "r", encoding=ENCODE)
+
     template = load_template(arg.template)
 
     articles = [Article(Path(fname)) for fname in get_articles(arg.top_dir)]
@@ -71,7 +75,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
     parser.add_argument("top_dir")
-    parser.add_argument("--template", "-t", type=argparse.FileType("r", encoding=ENCODE), default="template.html")
+    parser.add_argument("--template", "-t", type=argparse.FileType("r", encoding=ENCODE))
 
     args = parser.parse_args()
 
