@@ -1,4 +1,4 @@
-import sys, re, glob, json, argparse
+import sys, re, glob, json, argparse, hashlib, datetime
 from io import StringIO
 from pathlib import Path
 import yaml, markdown
@@ -6,6 +6,29 @@ from jinja2 import Template
 
 ENCODE = "utf-8"
 EXTENSIONS = ["tables", "fenced_code"]
+
+RSS_TEMPLATE = """
+<?xml version="1.0" encoding="UTF-8" ?>
+<rss version="2.0">
+<channel>
+  <title>静カニのブログ</title>
+  <link>https://shizukani-cp.github.io/blog/</link>
+  <language>ja-jp</language>
+  <description>静カニのブログ</description>
+  {items}
+</channel>
+</rss>
+"""
+
+RSS_ITEM_TEMPLATE = """
+<item>
+    <title>{title}</title>
+    <link>https://shizukani-cp.github.io/blog/articles/{date}</link>
+    <description>{description}</description>
+    <pubDate>{datetime}</pubDate>
+    <guid>{hash}</guid>
+</item>
+"""
 
 def get_articles(top):
     return glob.glob(f"{top}/articles/[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]/index.md")
@@ -48,6 +71,19 @@ class Article:
         with open(self._get_html_file_name(), "w", encoding=ENCODE) as f:
             f.write(self._to_html_with_template(template))
 
+    def get_rss(self):
+        return RSS_ITEM_TEMPLATE.format(
+            title=self.config["title"],
+            date=self.config["date"],
+            description=self.config["description"],
+            datetime=datetime.datetime(
+                int(str(self.config["date"])[:4]),
+                int(str(self.config["date"])[4:6]),
+                int(str(self.config["date"])[6:])
+            ),
+            hash=hashlib.sha256(self.config["title"].encode()).hexdigest()
+        )
+
 def load_template(templatefile):
     return Template(templatefile.read())
 
@@ -70,6 +106,9 @@ def main(arg):
 
     with open(Path(arg.top_dir) / "scripts" / "articles.json.js", "w", encoding=ENCODE) as f:
         f.write(f"window.articles = JSON.parse('{json.dumps(configs, ensure_ascii=False)}');")
+
+    with open(Path(arg.top_dir) / "rss.xml", "w", encoding=ENCODE) as f:
+        f.write(RSS_TEMPLATE.format(items="\n".join([article.get_rss() for article in articles])))
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
