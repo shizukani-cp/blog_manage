@@ -30,7 +30,10 @@ RSS_ITEM_TEMPLATE = """
 """
 
 def get_articles(top):
-    return glob.glob(f"{top}/articles/[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]/index.md")
+    files = glob.glob(f"{top}/articles/[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]")
+    file_dates = [int(fname[-8:]) for fname in files]
+    file_dates.sort()
+    return [f"{top}/articles/{date}/index.md" for date in file_dates]
 
 class Article:
     def __init__(self, filepath: Path):
