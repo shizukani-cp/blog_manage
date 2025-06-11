@@ -1,3 +1,2 @@
 # blog-manage
-
-Describe your project here.
+自分のブログ用の管理ツール

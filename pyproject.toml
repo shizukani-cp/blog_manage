@@ -3,7 +3,7 @@ name = "blog-manage"
 version = "0.1.0"
 description = "Add your description here"
 authors = [
-    { name = "shizukani-cp", email = "to.maimai0606@gmail.com" }
+    { name = "shizukani-cp", email = "shizukani.cp@gmail.com" }
 ]
 dependencies = [
     "pyyaml>=6.0.2",
@@ -26,3 +26,9 @@ allow-direct-references = true
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/blog_manage"]
+
+[dependency-groups]
+dev = [
+    "build>=1.2.2.post1",
+    "twine>=6.1.0",
+]
