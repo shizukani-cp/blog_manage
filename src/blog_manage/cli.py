@@ -19,6 +19,12 @@ RSS_ITEM_TEMPLATE = """
 </item>
 """
 
+SITEMAP_ITEM_TEMPLATE = """
+<url>
+    <loc>https://shizukani-cp.github.io/blog/articles/{date}</loc>
+</url>
+"""
+
 def get_articles(top):
     files = glob.glob(f"{top}/articles/[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]")
     file_dates = [int(fname[-8:]) for fname in files]
@@ -75,6 +81,10 @@ class Article:
             ),
             hash=hashlib.sha256(self.config["title"].encode()).hexdigest()
         )
+    def get_sitemap(self):
+        return SITEMAP_ITEM_TEMPLATE.format(
+                date=self.config["date"],
+        )
 
 def load_template(templatefile):
     return Template(templatefile.read())
@@ -89,6 +99,16 @@ RSS_TEMPLATE = """<?xml version="1.0" encoding="UTF-8" ?>
   {items}
 </channel>
 </rss>
+"""
+
+SITEMAP_TEMPLATE = """<?xml version="1.0" encoding="UTF-8"?>
+<urlset
+      xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
+            http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+  {items}
+</urlset>
 """
 
 def execute(arg):
@@ -113,6 +133,9 @@ def execute(arg):
 
     with open(Path(arg.top_dir) / "rss.xml", "w", encoding=ENCODE) as f:
         f.write(RSS_TEMPLATE.format(items="\n".join([article.get_rss() for article in articles])))
+
+    with open(Path(arg.top_dir) / "sitemap.xml", "w", encoding=ENCODE) as f:
+        f.write(SITEMAP_TEMPLATE.format(items="\n".join([article.get_sitemap() for article in articles])))
 
 def main():
     parser = argparse.ArgumentParser()
